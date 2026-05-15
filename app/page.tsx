@@ -18,7 +18,7 @@ export default function HomePage() {
       <section>
         <h2>Install — script tag</h2>
         <pre><code>{`<div id="daily-soup"></div>
-<script src="https://daily-soup.vercel.app/embed.js" async></script>`}</code></pre>
+<script src="https://daily-soup-widget.vercel.app/embed.js" async></script>`}</code></pre>
         <p>
           Optional config via <code>data-*</code> attributes on the mount node:
           <code> data-lang="en"</code>, <code>data-theme="dark"</code>.

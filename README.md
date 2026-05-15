@@ -2,7 +2,7 @@
 
 Embeddable daily-quote widget. Drop a `<script>` tag on any website, or `npm install` it as a React component. Same deterministic quote everywhere, every day — growth-themed, copyright-safe, zero config.
 
-- **Live demo:** https://daily-soup.vercel.app
+- **Live demo:** https://daily-soup-widget.vercel.app
 - **Source:** https://github.com/mshmwr/daily-soup-widget
 - **License:** MIT
 
@@ -24,7 +24,7 @@ The content theme is 人生成長 (personal growth). 30 seed quotes ship in v1; 
 
 ```html
 <div id="daily-soup"></div>
-<script src="https://daily-soup.vercel.app/embed.js" async></script>
+<script src="https://daily-soup-widget.vercel.app/embed.js" async></script>
 ```
 
 Optional config via `data-*` attributes:
@@ -69,7 +69,7 @@ const handle = mount(host, { lang: 'zh', theme: 'auto' });
 | ------------- | ----------------------------------- | -------------------------------- | ----------------------------------------------------------------- |
 | `lang`        | `'zh'` / `'en'`                     | `'zh'`                           | Content language. One value per widget instance.                  |
 | `theme`       | `'auto'` / `'light'` / `'dark'`     | `'auto'`                         | `auto` follows host's `prefers-color-scheme` and reacts to changes. |
-| `scheduleUrl` | any HTTPS URL or `''` (same-origin) | `https://daily-soup.vercel.app`  | Override the CDN that serves `/schedule-<lang>.json`.             |
+| `scheduleUrl` | any HTTPS URL or `''` (same-origin) | `https://daily-soup-widget.vercel.app`  | Override the CDN that serves `/schedule-<lang>.json`.             |
 
 Layout is **not** configurable. The widget uses container queries against its own width — drop it in a 200px sidebar or a 700px content column and it adapts. Three breakpoints: <320px (icon-only share row), 320–500px (standard), >500px (larger quote).
 

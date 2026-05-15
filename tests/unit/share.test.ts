@@ -9,7 +9,7 @@ describe('buildXShareUrl', () => {
     expect(url).toMatch(/twitter\.com\/intent\/tweet/);
     expect(url).toContain(encodeURIComponent('千里之行，始於足下。'));
     expect(url).toContain(encodeURIComponent('老子'));
-    expect(url).toContain(encodeURIComponent('https://daily-soup.vercel.app'));
+    expect(url).toContain(encodeURIComponent('https://daily-soup-widget.vercel.app'));
   });
 });
 

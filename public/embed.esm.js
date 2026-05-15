@@ -43,7 +43,7 @@ function watchSystemTheme(cb) {
 }
 
 // src/share.ts
-var SHARE_URL = "https://daily-soup.vercel.app";
+var SHARE_URL = "https://daily-soup-widget.vercel.app";
 async function copyToClipboard(content) {
   const payload = `${content.text} \u2014 ${content.author}`;
   if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -164,7 +164,7 @@ function todayUtc8(now = /* @__PURE__ */ new Date()) {
 }
 
 // src/widget.ts
-var DEFAULT_SCHEDULE_BASE = "https://daily-soup.vercel.app";
+var DEFAULT_SCHEDULE_BASE = "https://daily-soup-widget.vercel.app";
 function escape(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
