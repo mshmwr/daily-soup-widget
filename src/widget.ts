@@ -1,6 +1,6 @@
 import type { Lang, MountOptions, Quote, ResolvedTheme, Schedule, ThemeConfig } from './types';
 import { t } from './i18n';
-import { resolveTheme, watchSystemTheme } from './theme';
+import { resolveTheme, watchSystemTheme, getThemeColors } from './theme';
 import { buildLineShareUrl, buildXShareUrl, copyToClipboard } from './share';
 import { WIDGET_STYLES } from './styles';
 import { todayUtc8 } from './date';
@@ -135,10 +135,23 @@ function pickQuote(schedule: Schedule): Quote | null {
   return null;
 }
 
+function applyThemeOverrides(card: HTMLElement, config: ThemeConfig, maxWidth?: string) {
+  const colors = getThemeColors(config);
+  if (colors) {
+    if (colors.bg) card.style.setProperty('--ds-bg', colors.bg);
+    if (colors.ink) card.style.setProperty('--ds-fg', colors.ink);
+    if (colors.muted) card.style.setProperty('--ds-muted', colors.muted);
+    if (colors.border) card.style.setProperty('--ds-border', colors.border);
+    if (colors.accent) card.style.setProperty('--ds-accent', colors.accent);
+  }
+  if (maxWidth) card.style.setProperty('--ds-max-width', maxWidth);
+}
+
 export function mount(host: HTMLElement, options: MountOptions = {}): MountHandle {
   const lang: Lang = options.lang ?? 'zh';
   const themeConfig: ThemeConfig = options.theme ?? 'auto';
   const scheduleUrl = options.scheduleUrl === undefined ? DEFAULT_SCHEDULE_BASE : options.scheduleUrl;
+  const maxWidth = options.maxWidth;
 
   let resolvedTheme = resolveTheme(themeConfig);
   const root = attachRoot(host);
@@ -151,6 +164,7 @@ export function mount(host: HTMLElement, options: MountOptions = {}): MountHandl
   injectStyles(root);
 
   const card = buildSkeleton(resolvedTheme);
+  applyThemeOverrides(card, themeConfig, maxWidth);
   root.appendChild(card);
 
   const state: WidgetState = {
@@ -214,9 +228,10 @@ export function mountAll(selector = '[data-daily-soup], #daily-soup'): MountHand
   const handles: MountHandle[] = [];
   nodes.forEach((node) => {
     const lang = (node.dataset.lang as Lang | undefined) ?? 'zh';
-    const theme = (node.dataset.theme as ThemeConfig | undefined) ?? 'auto';
+    const theme = (node.dataset.theme as 'auto' | 'light' | 'dark' | undefined) ?? 'auto';
     const scheduleUrl = node.dataset.scheduleUrl;
-    handles.push(mount(node, { lang, theme, scheduleUrl }));
+    const maxWidth = node.dataset.maxWidth;
+    handles.push(mount(node, { lang, theme, scheduleUrl, maxWidth }));
   });
   return handles;
 }

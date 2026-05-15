@@ -28,10 +28,17 @@ function t(lang) {
 }
 
 // src/theme.ts
+function isThemeColors(config) {
+  return typeof config === "object" && config !== null;
+}
 function resolveTheme(config) {
+  if (isThemeColors(config)) return config.base ?? "light";
   if (config === "light" || config === "dark") return config;
   if (typeof window === "undefined" || !window.matchMedia) return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+function getThemeColors(config) {
+  return isThemeColors(config) ? config : null;
 }
 function watchSystemTheme(cb) {
   if (typeof window === "undefined" || !window.matchMedia) return () => {
@@ -73,14 +80,14 @@ var WIDGET_STYLES = `
   .ds-card {
     container-type: inline-size;
     width: 100%;
-    max-width: 32rem;
+    max-width: var(--ds-max-width, 32rem);
     margin: 0 auto;
     padding: 1.25rem 1.5rem;
     border-radius: 0.75rem;
     border: 1px solid var(--ds-border);
     background: var(--ds-bg);
     color: var(--ds-fg);
-    font-size: clamp(0.875rem, 2.5cqi, 1.125rem);
+    font-size: clamp(0.875rem, 2.5cqi, 1.25rem);
     line-height: 1.7;
     transition: background 0.2s ease, color 0.2s ease;
   }
@@ -148,6 +155,12 @@ var WIDGET_STYLES = `
   }
   @container (min-width: 500px) {
     .ds-quote { font-size: 1.25em; }
+  }
+  @container (min-width: 700px) {
+    .ds-card { padding: 1.75rem 2rem; }
+    .ds-quote { font-size: 1.35em; margin-bottom: 1.125rem; }
+    .ds-meta { gap: 0.25rem; margin-bottom: 1.125rem; }
+    .ds-actions { margin-top: 1.125rem; padding-top: 1.125rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .ds-card, .ds-btn { transition: none; }
@@ -261,10 +274,22 @@ function pickQuote(schedule) {
   }
   return null;
 }
+function applyThemeOverrides(card, config, maxWidth) {
+  const colors = getThemeColors(config);
+  if (colors) {
+    if (colors.bg) card.style.setProperty("--ds-bg", colors.bg);
+    if (colors.ink) card.style.setProperty("--ds-fg", colors.ink);
+    if (colors.muted) card.style.setProperty("--ds-muted", colors.muted);
+    if (colors.border) card.style.setProperty("--ds-border", colors.border);
+    if (colors.accent) card.style.setProperty("--ds-accent", colors.accent);
+  }
+  if (maxWidth) card.style.setProperty("--ds-max-width", maxWidth);
+}
 function mount(host, options = {}) {
   const lang = options.lang ?? "zh";
   const themeConfig = options.theme ?? "auto";
   const scheduleUrl = options.scheduleUrl === void 0 ? DEFAULT_SCHEDULE_BASE : options.scheduleUrl;
+  const maxWidth = options.maxWidth;
   let resolvedTheme = resolveTheme(themeConfig);
   const root = attachRoot(host);
   if (root === host) {
@@ -274,6 +299,7 @@ function mount(host, options = {}) {
   }
   injectStyles(root);
   const card = buildSkeleton(resolvedTheme);
+  applyThemeOverrides(card, themeConfig, maxWidth);
   root.appendChild(card);
   const state = {
     lang,
@@ -334,7 +360,8 @@ function mountAll(selector = "[data-daily-soup], #daily-soup") {
     const lang = node.dataset.lang ?? "zh";
     const theme = node.dataset.theme ?? "auto";
     const scheduleUrl = node.dataset.scheduleUrl;
-    handles.push(mount(node, { lang, theme, scheduleUrl }));
+    const maxWidth = node.dataset.maxWidth;
+    handles.push(mount(node, { lang, theme, scheduleUrl, maxWidth }));
   });
   return handles;
 }
@@ -342,13 +369,14 @@ function mountAll(selector = "[data-daily-soup], #daily-soup") {
 // src/component.tsx
 import { useEffect, useRef } from "react";
 import { jsx } from "react/jsx-runtime";
-function DailySoup({ lang = "zh", theme = "auto", scheduleUrl, className }) {
+function DailySoup({ lang = "zh", theme = "auto", scheduleUrl, className, maxWidth }) {
   const hostRef = useRef(null);
+  const themeKey = typeof theme === "string" ? theme : JSON.stringify(theme);
   useEffect(() => {
     if (!hostRef.current) return;
-    const handle = mount(hostRef.current, { lang, theme, scheduleUrl });
+    const handle = mount(hostRef.current, { lang, theme, scheduleUrl, maxWidth });
     return () => handle.destroy();
-  }, [lang, theme, scheduleUrl]);
+  }, [lang, themeKey, scheduleUrl, maxWidth]);
   return /* @__PURE__ */ jsx("div", { ref: hostRef, className, "data-daily-soup-host": "" });
 }
 export {

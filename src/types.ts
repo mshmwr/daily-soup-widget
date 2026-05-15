@@ -1,5 +1,15 @@
 export type Lang = 'zh' | 'en';
-export type ThemeConfig = 'auto' | 'light' | 'dark';
+
+export interface ThemeColors {
+  base?: 'light' | 'dark';
+  bg?: string;
+  ink?: string;
+  muted?: string;
+  border?: string;
+  accent?: string;
+}
+
+export type ThemeConfig = 'auto' | 'light' | 'dark' | ThemeColors;
 export type ResolvedTheme = 'light' | 'dark';
 
 export interface Quote {
@@ -24,6 +34,7 @@ export interface MountOptions {
   lang?: Lang;
   theme?: ThemeConfig;
   scheduleUrl?: string;
+  maxWidth?: string;
 }
 
 export interface DailySoupProps {
@@ -31,4 +42,5 @@ export interface DailySoupProps {
   theme?: ThemeConfig;
   scheduleUrl?: string;
   className?: string;
+  maxWidth?: string;
 }
