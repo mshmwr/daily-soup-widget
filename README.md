@@ -161,6 +161,6 @@ npm run build              # full prod build (schedule + bundle + types + Next.j
 
 ## License
 
-MIT © 2026 coco (mshmwr). See [`LICENSE`](./LICENSE).
+MIT © 2026 mshmwr. See [`LICENSE`](./LICENSE).
 
 Quote sources are public-domain or PD-in-Taiwan; see frontmatter on each quote file for attribution.

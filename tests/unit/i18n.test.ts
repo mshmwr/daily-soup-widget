@@ -4,7 +4,7 @@ import { t } from '../../src/i18n';
 describe('t', () => {
   it('returns zh strings for zh', () => {
     expect(t('zh').copy).toBe('複製');
-    expect(t('zh').poweredBy).toContain('coco-c.dev');
+    expect(t('zh').poweredBy).toContain('mshmwr');
   });
 
   it('returns en strings for en', () => {
