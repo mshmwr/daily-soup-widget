@@ -64,12 +64,12 @@ export default function Page() {
             MIT License
           </a>
           {' · '}
-          <a href="https://coco-c.dev" target="_blank" rel="noopener noreferrer">coco-c.dev</a>
+          <a href="https://personal-site-mocha-chi.vercel.app" target="_blank" rel="noopener noreferrer">mshmwr</a>
         </p>
       </section>
 
       <div className="footer">
-        Built by <a href="https://coco-c.dev" target="_blank" rel="noopener noreferrer">coco</a>.
+        Built by <a href="https://personal-site-mocha-chi.vercel.app" target="_blank" rel="noopener noreferrer">mshmwr</a>.
         Quotes deterministically scheduled by UTC+8 day; past dates never change once published.
       </div>
     </main>

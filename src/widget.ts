@@ -82,7 +82,7 @@ function renderQuote(card: HTMLElement, quote: Quote, lang: Lang, theme: Resolve
           <span aria-hidden="true">L</span><span class="ds-share-label">LINE</span>
         </a>
       </div>
-      <span class="ds-powered"><a href="https://coco-c.dev" target="_blank" rel="noopener noreferrer">${s.poweredBy}</a></span>
+      <span class="ds-powered"><a href="https://personal-site-mocha-chi.vercel.app" target="_blank" rel="noopener noreferrer">${s.poweredBy}</a></span>
     </div>
   `;
 

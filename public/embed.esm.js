@@ -5,7 +5,7 @@ var STRINGS = {
     copied: "\u5DF2\u8907\u88FD",
     share: "\u5206\u4EAB",
     source: "\u51FA\u8655",
-    poweredBy: "\u7531 coco-c.dev \u63D0\u4F9B",
+    poweredBy: "\u7531 mshmwr \u63D0\u4F9B",
     attributedPopular: "\u50B3\u7D71\u6B78\u5C6C",
     shareX: "\u5206\u4EAB\u5230 X",
     shareLine: "\u5206\u4EAB\u5230 LINE",
@@ -16,7 +16,7 @@ var STRINGS = {
     copied: "Copied!",
     share: "Share",
     source: "Source",
-    poweredBy: "powered by coco-c.dev",
+    poweredBy: "powered by mshmwr",
     attributedPopular: "popularly attributed",
     shareX: "Share on X",
     shareLine: "Share on LINE",
@@ -213,7 +213,7 @@ function renderQuote(card, quote, lang, theme) {
           <span aria-hidden="true">L</span><span class="ds-share-label">LINE</span>
         </a>
       </div>
-      <span class="ds-powered"><a href="https://coco-c.dev" target="_blank" rel="noopener noreferrer">${s.poweredBy}</a></span>
+      <span class="ds-powered"><a href="https://personal-site-mocha-chi.vercel.app" target="_blank" rel="noopener noreferrer">${s.poweredBy}</a></span>
     </div>
   `;
   const copyBtn = card.querySelector('[data-action="copy"]');

@@ -23,6 +23,6 @@ test('widget mounts and renders a quote inside its shadow root', async ({ page }
 
 test('powered-by link is present in every mounted widget', async ({ page }) => {
   await page.goto('/');
-  const poweredCount = await page.locator('.ds-powered a:has-text("coco-c.dev")').count();
+  const poweredCount = await page.locator('.ds-powered a:has-text("mshmwr")').count();
   expect(poweredCount).toBeGreaterThanOrEqual(3);
 });

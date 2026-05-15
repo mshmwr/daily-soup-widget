@@ -1,6 +1,6 @@
 {
   "name": "daily-soup-widget",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Embeddable daily quote widget — growth-themed, deterministic, copyright-safe. Drop a script tag or npm install.",
   "keywords": ["widget", "embed", "daily-quote", "shadow-dom", "react", "umd"],
   "homepage": "https://daily-soup-widget.vercel.app",
@@ -9,7 +9,7 @@
     "url": "https://github.com/mshmwr/daily-soup-widget.git"
   },
   "license": "MIT",
-  "author": "coco (mshmwr)",
+  "author": "mshmwr",
   "type": "module",
   "main": "./dist/embed.cjs.js",
   "module": "./dist/embed.esm.js",
