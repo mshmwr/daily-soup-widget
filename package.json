@@ -22,14 +22,16 @@
     }
   },
   "files": [
-    "dist/",
+    "dist/embed.*",
+    "dist/schedule-*.json",
+    "dist/types/**/*.d.ts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build:schedule": "tsx scripts/build-schedule.ts",
     "build:bundle": "tsx scripts/build-bundle.ts",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist/types",
+    "build:types": "tsc -p tsconfig.build.json",
     "build": "npm run build:schedule && npm run build:bundle && npm run build:types && next build",
     "dev": "next dev",
     "start": "next start",
