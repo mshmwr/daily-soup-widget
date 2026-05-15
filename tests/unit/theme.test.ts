@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest';
-import { resolveTheme } from '../../src/theme';
+import { resolveTheme, getThemeColors } from '../../src/theme';
 
 describe('resolveTheme', () => {
   beforeEach(() => {
@@ -30,5 +30,26 @@ describe('resolveTheme', () => {
       matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }),
     });
     expect(resolveTheme('auto')).toBe('light');
+  });
+
+  it('object theme without base defaults to light', () => {
+    expect(resolveTheme({ bg: '#fff8ee' })).toBe('light');
+  });
+
+  it('object theme with explicit base returns base', () => {
+    expect(resolveTheme({ base: 'dark', bg: '#000' })).toBe('dark');
+  });
+});
+
+describe('getThemeColors', () => {
+  it('returns null for string themes', () => {
+    expect(getThemeColors('auto')).toBeNull();
+    expect(getThemeColors('light')).toBeNull();
+    expect(getThemeColors('dark')).toBeNull();
+  });
+
+  it('returns the object itself for object themes', () => {
+    const obj = { base: 'light' as const, bg: '#fff8ee', border: 'transparent' };
+    expect(getThemeColors(obj)).toBe(obj);
   });
 });

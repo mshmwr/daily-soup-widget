@@ -65,13 +65,29 @@ const handle = mount(host, { lang: 'zh', theme: 'auto' });
 
 ## Configuration
 
-| Option        | Values                              | Default                          | Description                                                       |
-| ------------- | ----------------------------------- | -------------------------------- | ----------------------------------------------------------------- |
-| `lang`        | `'zh'` / `'en'`                     | `'zh'`                           | Content language. One value per widget instance.                  |
-| `theme`       | `'auto'` / `'light'` / `'dark'`     | `'auto'`                         | `auto` follows host's `prefers-color-scheme` and reacts to changes. |
-| `scheduleUrl` | any HTTPS URL or `''` (same-origin) | `https://daily-soup-widget.vercel.app`  | Override the CDN that serves `/schedule-<lang>.json`.             |
+| Option        | Values                                            | Default                                | Description                                                       |
+| ------------- | ------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------- |
+| `lang`        | `'zh'` / `'en'`                                   | `'zh'`                                 | Content language. One value per widget instance.                  |
+| `theme`       | `'auto'` / `'light'` / `'dark'` / color object    | `'auto'`                               | `auto` follows host's `prefers-color-scheme` and reacts to changes. Pass an object to override colors — see below. |
+| `scheduleUrl` | any HTTPS URL or `''` (same-origin)               | `https://daily-soup-widget.vercel.app` | Override the CDN that serves `/schedule-<lang>.json`.             |
+| `maxWidth`    | any valid CSS width (e.g. `'100%'`, `'48rem'`)    | `'32rem'`                              | Cap on the card's rendered width. Set to `'100%'` to fill the embed container. |
 
-Layout is **not** configurable. The widget uses container queries against its own width — drop it in a 200px sidebar or a 700px content column and it adapts. Three breakpoints: <320px (icon-only share row), 320–500px (standard), >500px (larger quote).
+### Theme as object
+
+For a quick palette tweak without a full restyle, pass an object instead of a string:
+
+```tsx
+<DailySoup
+  theme={{ base: 'light', bg: '#fff8ee', border: 'transparent' }}
+  maxWidth="100%"
+/>
+```
+
+Recognised keys: `base` (`'light'` | `'dark'`, controls default vars before overrides), `bg`, `ink`, `muted`, `border`, `accent`. Any omitted key falls back to the `base` palette. Object themes do **not** follow system preference — they're explicit.
+
+CDN attribute support is string-only — use `data-theme="auto|light|dark"` and `data-max-width="..."`. The object form requires the NPM API.
+
+Container queries still apply for layout. Three breakpoints: <320px (icon-only share row), 320–500px (standard), 500–700px (larger quote), >700px (comfortable spacing). The card never exceeds `maxWidth`.
 
 ---
 

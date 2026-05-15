@@ -4,14 +4,14 @@ export const WIDGET_STYLES = `
   .ds-card {
     container-type: inline-size;
     width: 100%;
-    max-width: 32rem;
+    max-width: var(--ds-max-width, 32rem);
     margin: 0 auto;
     padding: 1.25rem 1.5rem;
     border-radius: 0.75rem;
     border: 1px solid var(--ds-border);
     background: var(--ds-bg);
     color: var(--ds-fg);
-    font-size: clamp(0.875rem, 2.5cqi, 1.125rem);
+    font-size: clamp(0.875rem, 2.5cqi, 1.25rem);
     line-height: 1.7;
     transition: background 0.2s ease, color 0.2s ease;
   }
@@ -79,6 +79,12 @@ export const WIDGET_STYLES = `
   }
   @container (min-width: 500px) {
     .ds-quote { font-size: 1.25em; }
+  }
+  @container (min-width: 700px) {
+    .ds-card { padding: 1.75rem 2rem; }
+    .ds-quote { font-size: 1.35em; margin-bottom: 1.125rem; }
+    .ds-meta { gap: 0.25rem; margin-bottom: 1.125rem; }
+    .ds-actions { margin-top: 1.125rem; padding-top: 1.125rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .ds-card, .ds-btn { transition: none; }
