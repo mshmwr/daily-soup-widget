@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Embeddable daily quote widget — growth-themed, deterministic, copyright-safe. Drop a script tag or npm install.",
   "keywords": ["widget", "embed", "daily-quote", "shadow-dom", "react", "umd"],
-  "homepage": "https://daily-soup.vercel.app",
+  "homepage": "https://daily-soup-widget.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/mshmwr/daily-soup-widget.git"

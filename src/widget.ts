@@ -5,7 +5,7 @@ import { buildLineShareUrl, buildXShareUrl, copyToClipboard } from './share';
 import { WIDGET_STYLES } from './styles';
 import { todayUtc8 } from './date';
 
-const DEFAULT_SCHEDULE_BASE = 'https://daily-soup.vercel.app';
+const DEFAULT_SCHEDULE_BASE = 'https://daily-soup-widget.vercel.app';
 
 export interface MountHandle {
   destroy(): void;

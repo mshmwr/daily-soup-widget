@@ -1,4 +1,4 @@
-const SHARE_URL = 'https://daily-soup.vercel.app';
+const SHARE_URL = 'https://daily-soup-widget.vercel.app';
 
 export interface ShareContent {
   text: string;

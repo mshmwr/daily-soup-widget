@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('landing page renders hero + install snippets', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'Daily Soup' })).toBeVisible();
-  await expect(page.getByText('script src="https://daily-soup.vercel.app/embed.js"')).toBeVisible();
+  await expect(page.getByText('script src="https://daily-soup-widget.vercel.app/embed.js"')).toBeVisible();
   await expect(page.getByText("npm install daily-soup-widget")).toBeVisible();
 });
 
