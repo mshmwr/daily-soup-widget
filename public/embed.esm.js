@@ -155,11 +155,12 @@ var WIDGET_STYLES = `
   }
   @container (min-width: 500px) {
     .ds-quote { font-size: 1.25em; }
+    .ds-meta { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
   }
   @container (min-width: 700px) {
     .ds-card { padding: 1.75rem 2rem; }
     .ds-quote { font-size: 1.35em; margin-bottom: 1.125rem; }
-    .ds-meta { gap: 0.25rem; margin-bottom: 1.125rem; }
+    .ds-meta { gap: 0.25rem 1rem; margin-bottom: 1.125rem; }
     .ds-actions { margin-top: 1.125rem; padding-top: 1.125rem; }
   }
   @media (prefers-reduced-motion: reduce) {
