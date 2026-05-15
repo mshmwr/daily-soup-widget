@@ -341,6 +341,7 @@ function mountAll(selector = "[data-daily-soup], #daily-soup") {
 
 // src/component.tsx
 import { useEffect, useRef } from "react";
+import { jsx } from "react/jsx-runtime";
 function DailySoup({ lang = "zh", theme = "auto", scheduleUrl, className }) {
   const hostRef = useRef(null);
   useEffect(() => {
@@ -348,7 +349,7 @@ function DailySoup({ lang = "zh", theme = "auto", scheduleUrl, className }) {
     const handle = mount(hostRef.current, { lang, theme, scheduleUrl });
     return () => handle.destroy();
   }, [lang, theme, scheduleUrl]);
-  return /* @__PURE__ */ React.createElement("div", { ref: hostRef, className, "data-daily-soup-host": "" });
+  return /* @__PURE__ */ jsx("div", { ref: hostRef, className, "data-daily-soup-host": "" });
 }
 export {
   DailySoup,
