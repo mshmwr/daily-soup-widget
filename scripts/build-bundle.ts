@@ -17,7 +17,8 @@ const shared = {
   target: 'es2020',
   sourcemap: true,
   minify: true,
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
+  jsx: 'automatic' as const,
 };
 
 async function main() {
