@@ -1,4 +1,4 @@
-export type Lang = 'zh' | 'en';
+export type Lang = 'zh';
 
 export interface ThemeColors {
   base?: 'light' | 'dark';

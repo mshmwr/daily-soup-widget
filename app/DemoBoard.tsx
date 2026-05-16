@@ -17,8 +17,8 @@ export function DemoBoard() {
         </div>
       </div>
       <div>
-        <div className="demo-label">en · light · standard</div>
-        <DailySoup lang="en" theme="light" scheduleUrl="" />
+        <div className="demo-label">zh · light · standard</div>
+        <DailySoup lang="zh" theme="light" scheduleUrl="" />
       </div>
       <div>
         <div className="demo-label">zh · dark · wide</div>

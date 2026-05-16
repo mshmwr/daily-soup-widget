@@ -21,7 +21,6 @@ describe('buildSchedule', () => {
     q('0001', 'zh'),
     q('0002', 'zh'),
     q('0003', 'zh'),
-    q('0004', 'en'),
   ];
 
   it('round-robins through the language pool in id order', () => {
@@ -57,21 +56,21 @@ describe('buildSchedule', () => {
   });
 
   it('emits a quotes pool containing only entries for the requested lang', () => {
-    const s = buildSchedule('en', pool, {
+    const s = buildSchedule('zh', pool, {
       launchDate: '2026-05-15',
       today: '2026-05-15',
       forwardDays: 2,
     });
-    expect(Object.keys(s.quotes)).toEqual(['0004']);
+    expect(Object.keys(s.quotes).sort()).toEqual(['0001', '0002', '0003']);
   });
 
   it('throws when no quotes match the requested lang', () => {
     expect(() =>
-      buildSchedule('en', [q('0001', 'zh')], {
+      buildSchedule('zh', [], {
         launchDate: '2026-05-15',
         today: '2026-05-15',
         forwardDays: 1,
       }),
-    ).toThrow(/lang=en/);
+    ).toThrow(/lang=zh/);
   });
 });

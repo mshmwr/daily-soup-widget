@@ -24,17 +24,6 @@ const STRINGS: Record<Lang, UiStrings> = {
     shareLine: '分享到 LINE',
     loadFailed: '本日小語載入失敗',
   },
-  en: {
-    copy: 'Copy',
-    copied: 'Copied!',
-    share: 'Share',
-    source: 'Source',
-    poweredBy: 'powered by mshmwr',
-    attributedPopular: 'popularly attributed',
-    shareX: 'Share on X',
-    shareLine: 'Share on LINE',
-    loadFailed: 'Failed to load daily quote',
-  },
 };
 
 export function t(lang: Lang): UiStrings {

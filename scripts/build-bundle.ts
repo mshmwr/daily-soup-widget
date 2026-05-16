@@ -53,7 +53,7 @@ async function main() {
   for (const name of ['embed.js', 'embed.esm.js']) {
     copyFileSync(join(DIST_DIR, name), join(PUBLIC_DIR, name));
   }
-  for (const lang of ['zh', 'en']) {
+  for (const lang of ['zh']) {
     const src = join(DIST_DIR, `schedule-${lang}.json`);
     if (existsSync(src)) copyFileSync(src, join(PUBLIC_DIR, `schedule-${lang}.json`));
   }
