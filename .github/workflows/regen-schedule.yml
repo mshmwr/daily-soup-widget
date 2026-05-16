@@ -1,0 +1,39 @@
+name: regen-schedule
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: regen-schedule
+  cancel-in-progress: false
+
+jobs:
+  regen:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:schedule
+      - run: npm run build:bundle
+      - name: Commit if changed
+        run: |
+          if git diff --quiet public/schedule-en.json public/schedule-zh.json; then
+            echo "no schedule diff, skipping commit"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/schedule-en.json public/schedule-zh.json
+          git commit -m "chore(schedule): regen $(date -u +%Y-%m-%d)"
+          git push
