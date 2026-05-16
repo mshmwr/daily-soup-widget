@@ -173,6 +173,8 @@ npm run build              # full prod build (schedule + bundle + types + Next.j
 
 The `NPM_TOKEN` must be a granular automation token scoped to read & write on `daily-soup-widget`.
 
+**Verifying the auth chain without a version bump:** trigger `gh workflow run publish.yml -R mshmwr/daily-soup-widget` against the current `main`. The workflow runs all pre-publish steps and then attempts `npm publish` on the already-published version, which the registry rejects with `E403 You cannot publish over the previously published versions: <version>`. Reaching that exact error confirms the `NPM_TOKEN` secret is present and has publish scope — only the uniqueness check rejected. Use this whenever you rotate the token or change the workflow, instead of minting a throwaway version. Note: `npm whoami` on a granular automation token returns 401 and is not a valid auth-chain test; use `npm publish --dry-run` (locally) or this `workflow_dispatch` trick (in CI) instead.
+
 ### Auditing source URLs
 
 `npm run check:source-urls` HEADs every `sourceUrl` in `content/quotes/**` and flags pages whose body matches `資料已刪除|404 Not Found`. Run before each release; null any broken URLs in frontmatter (the widget renders source as plain text when `sourceUrl` is empty).
