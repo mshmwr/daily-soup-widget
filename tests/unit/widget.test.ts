@@ -56,3 +56,45 @@ describe('mount — theme overrides + maxWidth', () => {
     expect(card.style.getPropertyValue('--ds-fg')).toBe('');
   });
 });
+
+describe('mount — visibilitychange midnight rollover', () => {
+  let host: HTMLElement;
+
+  beforeEach(() => {
+    host = document.createElement('div');
+    document.body.appendChild(host);
+  });
+
+  afterEach(() => {
+    host.remove();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('rerenders next-day quote on visibilitychange after GMT+8 date rollover', async () => {
+    const schedule = {
+      launchDate: '2026-05-16',
+      generatedAt: '2026-05-16T00:00:00Z',
+      lang: 'zh',
+      entries: { '2026-05-16': 'today', '2026-05-17': 'tomorrow' },
+      quotes: {
+        today:    { text: 'TodayQuote',    author: 'A', source: '', sourceUrl: '', attribution: 'verified', dimension: 'action', style: 'classical' },
+        tomorrow: { text: 'TomorrowQuote', author: 'B', source: '', sourceUrl: '', attribution: 'verified', dimension: 'action', style: 'classical' },
+      },
+    };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => schedule }));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-16T01:00:00Z')); // GMT+8 = 09:00 May 16
+
+    mount(host, { theme: 'light' });
+    await vi.runAllTimersAsync();
+
+    const root = host.shadowRoot ?? host;
+    expect(root.querySelector('.ds-quote')?.textContent).toBe('TodayQuote');
+
+    vi.setSystemTime(new Date('2026-05-16T16:30:00Z')); // GMT+8 = 00:30 May 17
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    expect(root.querySelector('.ds-quote')?.textContent).toBe('TomorrowQuote');
+  });
+});

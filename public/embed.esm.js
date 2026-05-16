@@ -127,9 +127,9 @@ var WIDGET_STYLES = `
     align-items: center;
     gap: 0.25rem;
   }
-  .ds-btn:hover { background: var(--ds-accent); color: var(--ds-bg); border-color: var(--ds-accent); }
+  .ds-btn:hover { color: var(--ds-accent); border-color: var(--ds-accent); }
   .ds-btn:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
-  .ds-btn.ds-toast { background: var(--ds-accent); color: var(--ds-bg); border-color: var(--ds-accent); }
+  .ds-btn.ds-toast { color: var(--ds-accent); border-color: var(--ds-accent); }
   .ds-powered { font-size: 0.75em; color: var(--ds-muted); }
   .ds-powered a { color: var(--ds-muted); text-decoration: none; }
   .ds-powered a:hover { text-decoration: underline; }
@@ -299,7 +299,11 @@ function mount(host, options = {}) {
     root,
     cardEl: card,
     unwatchTheme: () => {
-    }
+    },
+    unwatchVisibility: () => {
+    },
+    schedule: null,
+    displayedDate: ""
   };
   if (themeConfig === "auto") {
     state.unwatchTheme = watchSystemTheme((t2) => {
@@ -322,18 +326,35 @@ function mount(host, options = {}) {
       renderError(state.cardEl, lang, resolvedTheme);
       return;
     }
+    state.schedule = schedule;
     const quote = pickQuote(schedule);
     if (!quote) {
       renderError(state.cardEl, lang, resolvedTheme);
       return;
     }
+    state.displayedDate = todayUtc8();
     renderQuote(state.cardEl, quote, lang, resolvedTheme);
   };
   load();
+  if (typeof document !== "undefined") {
+    const onVisibility = () => {
+      if (document.visibilityState !== "visible") return;
+      if (!state.schedule) return;
+      const today = todayUtc8();
+      if (today === state.displayedDate) return;
+      const quote = pickQuote(state.schedule);
+      if (!quote) return;
+      state.displayedDate = today;
+      renderQuote(state.cardEl, quote, lang, resolvedTheme);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    state.unwatchVisibility = () => document.removeEventListener("visibilitychange", onVisibility);
+  }
   return {
     destroy() {
       cancelled = true;
       state.unwatchTheme();
+      state.unwatchVisibility();
       if (root === host) {
         host.textContent = "";
       } else if (host.shadowRoot) {

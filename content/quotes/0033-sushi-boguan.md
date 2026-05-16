@@ -3,7 +3,7 @@ id: "0033"
 lang: zh
 author: 蘇軾
 source: 《稼說送張琥》
-sourceUrl: https://ctext.org/wiki.pl?if=gb&chapter=596072
+sourceUrl: ""
 attribution: verified
 dimension: learning
 style: classical

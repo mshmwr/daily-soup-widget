@@ -19,6 +19,9 @@ interface WidgetState {
   root: ShadowRoot | HTMLElement;
   cardEl: HTMLElement;
   unwatchTheme: () => void;
+  unwatchVisibility: () => void;
+  schedule: Schedule | null;
+  displayedDate: string;
 }
 
 function escape(s: string): string {
@@ -175,6 +178,9 @@ export function mount(host: HTMLElement, options: MountOptions = {}): MountHandl
     root,
     cardEl: card,
     unwatchTheme: () => {},
+    unwatchVisibility: () => {},
+    schedule: null,
+    displayedDate: '',
   };
 
   if (themeConfig === 'auto') {
@@ -200,19 +206,37 @@ export function mount(host: HTMLElement, options: MountOptions = {}): MountHandl
       renderError(state.cardEl, lang, resolvedTheme);
       return;
     }
+    state.schedule = schedule;
     const quote = pickQuote(schedule);
     if (!quote) {
       renderError(state.cardEl, lang, resolvedTheme);
       return;
     }
+    state.displayedDate = todayUtc8();
     renderQuote(state.cardEl, quote, lang, resolvedTheme);
   };
   load();
+
+  if (typeof document !== 'undefined') {
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (!state.schedule) return;
+      const today = todayUtc8();
+      if (today === state.displayedDate) return;
+      const quote = pickQuote(state.schedule);
+      if (!quote) return;
+      state.displayedDate = today;
+      renderQuote(state.cardEl, quote, lang, resolvedTheme);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    state.unwatchVisibility = () => document.removeEventListener('visibilitychange', onVisibility);
+  }
 
   return {
     destroy() {
       cancelled = true;
       state.unwatchTheme();
+      state.unwatchVisibility();
       if (root === host) {
         host.textContent = '';
       } else if (host.shadowRoot) {
