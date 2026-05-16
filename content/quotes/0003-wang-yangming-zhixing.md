@@ -3,7 +3,7 @@ id: "0003"
 lang: zh
 author: 王陽明
 source: 《傳習錄·上》
-sourceUrl: https://ctext.org/wiki.pl?if=gb&res=86081
+sourceUrl: ""
 attribution: verified
 dimension: action
 style: classical

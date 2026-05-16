@@ -1,6 +1,6 @@
 {
   "name": "daily-soup-widget",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Embeddable daily quote widget — growth-themed, deterministic, copyright-safe. Drop a script tag or npm install.",
   "keywords": ["widget", "embed", "daily-quote", "shadow-dom", "react", "umd"],
   "homepage": "https://daily-soup-widget.vercel.app",
@@ -31,6 +31,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build:schedule": "tsx scripts/build-schedule.ts",
+    "check:source-urls": "tsx scripts/check-source-urls.ts",
     "build:bundle": "tsx scripts/build-bundle.ts",
     "build:types": "tsc -p tsconfig.build.json",
     "build:lib": "npm run clean && npm run build:schedule && npm run build:bundle && npm run build:types",
