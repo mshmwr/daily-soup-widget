@@ -165,6 +165,18 @@ npm run build              # full prod build (schedule + bundle + types + Next.j
 2. `npm run build:schedule` — extends the schedule, preserving past dates.
 3. Commit + PR. Merge triggers the GH Action to redeploy.
 
+### Releasing a new npm version
+
+1. Bump `version` in `package.json`, commit, merge to `main`.
+2. Tag and push: `git tag v0.2.3 && git push --tags`.
+3. `.github/workflows/publish.yml` runs `npm test` + `typecheck` + `build:lib` + `npm publish` against the `NPM_TOKEN` repo secret. No local `npm login` ever needed.
+
+The `NPM_TOKEN` must be a granular automation token scoped to read & write on `daily-soup-widget`.
+
+### Auditing source URLs
+
+`npm run check:source-urls` HEADs every `sourceUrl` in `content/quotes/**` and flags pages whose body matches `資料已刪除|404 Not Found`. Run before each release; null any broken URLs in frontmatter (the widget renders source as plain text when `sourceUrl` is empty).
+
 ---
 
 ## Browser support
