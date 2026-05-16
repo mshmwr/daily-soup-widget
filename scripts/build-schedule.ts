@@ -11,7 +11,7 @@ const DIST_DIR = join(ROOT, 'dist');
 const LAUNCH_DATE = '2026-05-15';
 const FORWARD_DAYS = 90;
 
-type Lang = 'zh' | 'en';
+type Lang = 'zh';
 
 interface QuoteFrontmatter {
   id: string;
@@ -159,7 +159,7 @@ function main() {
   const quotes = loadQuotes();
   console.log(`Loaded ${quotes.length} quotes from ${QUOTES_DIR}`);
 
-  for (const lang of ['zh', 'en'] as const) {
+  for (const lang of ['zh'] as const) {
     const existing = loadExistingSchedule(lang);
     const schedule = buildSchedule(lang, quotes, { existing });
     const outFile = join(DIST_DIR, `schedule-${lang}.json`);

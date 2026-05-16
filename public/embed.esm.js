@@ -10,17 +10,6 @@ var STRINGS = {
     shareX: "\u5206\u4EAB\u5230 X",
     shareLine: "\u5206\u4EAB\u5230 LINE",
     loadFailed: "\u672C\u65E5\u5C0F\u8A9E\u8F09\u5165\u5931\u6557"
-  },
-  en: {
-    copy: "Copy",
-    copied: "Copied!",
-    share: "Share",
-    source: "Source",
-    poweredBy: "powered by mshmwr",
-    attributedPopular: "popularly attributed",
-    shareX: "Share on X",
-    shareLine: "Share on LINE",
-    loadFailed: "Failed to load daily quote"
   }
 };
 function t(lang) {

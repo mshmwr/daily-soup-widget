@@ -16,7 +16,7 @@ A widget shaped like an answer to three questions at once:
 2. **Portfolio piece** — a shipped end-to-end embeddable tool with a hosted live demo.
 3. **Future product** — v1 is intentionally small so v2 (analytics, personalisation, monetisation) has room.
 
-The content theme is 人生成長 (personal growth). 30 seed quotes ship in v1; one per day, deterministically scheduled by UTC+8 date. Past dates never change once published.
+The content theme is 人生成長 (personal growth). 30 zh seed quotes ship in v0.2; one per day, deterministically scheduled by UTC+8 date. Past dates never change once published. **v0.2 is zh-only** — the earlier en pool was removed in favour of a larger zh repertoire.
 
 ---
 
@@ -30,7 +30,7 @@ The content theme is 人生成長 (personal growth). 30 seed quotes ship in v1; 
 Optional config via `data-*` attributes:
 
 ```html
-<div data-daily-soup data-lang="en" data-theme="dark"></div>
+<div data-daily-soup data-theme="dark" data-max-width="640px"></div>
 ```
 
 Multiple instances on one page are supported — the bundle auto-mounts every `[data-daily-soup]` and `#daily-soup` node it finds.
@@ -67,7 +67,7 @@ const handle = mount(host, { lang: 'zh', theme: 'auto' });
 
 | Option        | Values                                            | Default                                | Description                                                       |
 | ------------- | ------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------- |
-| `lang`        | `'zh'` / `'en'`                                   | `'zh'`                                 | Content language. One value per widget instance.                  |
+| `lang`        | `'zh'`                                            | `'zh'`                                 | Content language. zh-only since v0.2.                             |
 | `theme`       | `'auto'` / `'light'` / `'dark'` / color object    | `'auto'`                               | `auto` follows host's `prefers-color-scheme` and reacts to changes. Pass an object to override colors — see below. |
 | `scheduleUrl` | any HTTPS URL or `''` (same-origin)               | `https://daily-soup-widget.vercel.app` | Override the CDN that serves `/schedule-<lang>.json`.             |
 | `maxWidth`    | any valid CSS width (e.g. `'100%'`, `'48rem'`)    | `'32rem'`                              | Cap on the card's rendered width. Set to `'100%'` to fill the embed container. |
@@ -108,15 +108,15 @@ Container queries still apply for layout. Three breakpoints: <320px (icon-only s
 
 The client fetches one JSON, computes today's UTC+8 date, looks up the entry, and renders. **No second request. No cold start. No personalisation.** Past dates carry permanent content even if the quote pool reshuffles.
 
-A GitHub Actions cron (daily, 02:00 UTC) regenerates the JSON to extend the rolling 90-day window and redeploys. New quotes appended to the pool extend the rotation tail; existing schedule slots stay untouched.
+A GitHub Actions cron (monthly, day 1 at 16:00 UTC) regenerates the JSON to extend the rolling 90-day window and redeploys. New quotes appended to the pool extend the rotation tail; existing schedule slots stay untouched.
 
 ---
 
 ## What's in the box
 
-- **30 seed quotes** spanning six growth dimensions: 行動 / 學習 / 堅持 / 心態 / 蛻變 / 使命.
-- **20 Chinese + 10 English.** Of the Chinese: 7 vernacular (白話/半白), 10 classical (文言), 3 poetry (詩詞).
-- **Copyright posture:** all globally public-domain or PD-in-Taiwan. Each quote carries author + source attribution. Six entries marked `popular-attribution` for traditional / popularly-attributed sources.
+- **30 zh seed quotes** spanning five growth dimensions: 行動 / 學習 / 堅持 / 心態 / 蛻變.
+- All classical Chinese — 蘇軾、屈原、論語、孟子、莊子、荀子、王勃、杜甫、陸游、朱熹 等.
+- **Copyright posture:** all public-domain (Taiwan 50-year rule). Each quote carries author + source attribution with a 出處 link.
 
 Browse `content/quotes/*.md` to see the seed. Adding a quote = one PR per markdown file.
 
@@ -127,7 +127,7 @@ Browse `content/quotes/*.md` to see the seed. Adding a quote = one PR per markdo
 ```
 content/quotes/         hand-curated markdown quotes (the source of truth)
 scripts/
-  build-schedule.ts     content/*.md → dist/schedule-{zh,en}.json
+  build-schedule.ts     content/*.md → dist/schedule-zh.json
   build-bundle.ts       esbuild UMD + ESM + CJS bundles
 src/
   embed.ts              UMD entry (CDN, auto-mounts)
@@ -135,7 +135,7 @@ src/
   component.tsx         React wrapper
   widget.ts             framework-agnostic core (Shadow DOM, render, fetch)
   theme.ts              auto/light/dark resolution + system-theme listener
-  i18n.ts               UI strings (zh, en)
+  i18n.ts               UI strings (zh)
   share.ts              copy / X / LINE share builders
   styles.ts             widget CSS (injected into Shadow DOM)
 app/                    Next.js landing page (live demo + install snippets)

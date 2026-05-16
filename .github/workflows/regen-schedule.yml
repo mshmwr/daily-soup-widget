@@ -2,7 +2,8 @@ name: regen-schedule
 
 on:
   schedule:
-    - cron: '0 16 * * *'
+    # Monthly on day 1, 16:00 UTC (= UTC+8 day 2 midnight); rolling 90-day window
+    - cron: '0 16 1 * *'
   workflow_dispatch:
 
 permissions:
@@ -28,12 +29,12 @@ jobs:
       - run: npm run build:bundle
       - name: Commit if changed
         run: |
-          if git diff --quiet public/schedule-en.json public/schedule-zh.json; then
+          if git diff --quiet public/schedule-zh.json; then
             echo "no schedule diff, skipping commit"
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/schedule-en.json public/schedule-zh.json
+          git add public/schedule-zh.json
           git commit -m "chore(schedule): regen $(date -u +%Y-%m-%d)"
           git push

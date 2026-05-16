@@ -21,7 +21,7 @@ export default function HomePage() {
 <script src="https://daily-soup-widget.vercel.app/embed.js" async></script>`}</code></pre>
         <p>
           Optional config via <code>data-*</code> attributes on the mount node:
-          <code> data-lang="en"</code>, <code>data-theme="dark"</code>.
+          <code> data-theme="dark"</code>, <code>data-max-width="640px"</code>.
         </p>
       </section>
 
@@ -42,7 +42,7 @@ export default function Page() {
             <tr><th>Option</th><th>Values</th><th>Default</th></tr>
           </thead>
           <tbody>
-            <tr><td><code>lang</code></td><td><code>zh</code> / <code>en</code></td><td><code>zh</code></td></tr>
+            <tr><td><code>lang</code></td><td><code>zh</code></td><td><code>zh</code></td></tr>
             <tr><td><code>theme</code></td><td><code>auto</code> / <code>light</code> / <code>dark</code></td><td><code>auto</code></td></tr>
             <tr><td><code>scheduleUrl</code></td><td>any HTTPS URL</td><td>hosted CDN</td></tr>
           </tbody>
@@ -52,8 +52,8 @@ export default function Page() {
       <section>
         <h2>About</h2>
         <p>
-          Content seed: 30 growth-themed quotes spanning 行動, 學習, 堅持, 心態, 蛻變, 使命.
-          Public-domain classical works + PD-in-Taiwan modern works, with attribution.
+          Content seed: 30 中文成長主題語錄，涵蓋 行動、學習、堅持、心態、蛻變 五個維度。
+          全為公共領域古典詩文（蘇軾、屈原、論語、孟子等），附原典出處連結。
         </p>
         <p>
           <a href="https://github.com/mshmwr/daily-soup-widget" target="_blank" rel="noopener noreferrer">
