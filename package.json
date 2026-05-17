@@ -1,7 +1,7 @@
 {
   "name": "daily-soup-widget",
-  "version": "0.2.2",
-  "description": "Embeddable daily quote widget — growth-themed, deterministic, copyright-safe. Drop a script tag or npm install.",
+  "version": "0.3.0",
+  "description": "Embeddable daily quote widget — React-based, growth-themed, deterministic, copyright-safe. Drop a script tag or npm install.",
   "keywords": ["widget", "embed", "daily-quote", "shadow-dom", "react", "umd"],
   "homepage": "https://daily-soup-widget.vercel.app",
   "repository": {
@@ -47,10 +47,6 @@
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
-  },
-  "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-dom": { "optional": true }
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

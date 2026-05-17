@@ -51,7 +51,7 @@ export default function Page() {
 
 The component is SSR-safe: it emits a placeholder during render and hydrates the widget inside `useEffect`. No `window` access at module top-level.
 
-## Install — framework-agnostic ESM
+## Install — imperative API (NPM)
 
 ```ts
 import { mount } from 'daily-soup-widget';
@@ -60,6 +60,9 @@ const host = document.querySelector('#my-mount-point') as HTMLElement;
 const handle = mount(host, { lang: 'zh', theme: 'auto' });
 // later: handle.destroy();
 ```
+
+Same React peer requirement as the `<DailySoup>` component — install React + ReactDOM
+(>=18) alongside.
 
 ---
 
@@ -130,10 +133,10 @@ scripts/
   build-schedule.ts     content/*.md → dist/schedule-zh.json
   build-bundle.ts       esbuild UMD + ESM + CJS bundles
 src/
-  embed.ts              UMD entry (CDN, auto-mounts)
+  embed.ts              UMD entry (CDN, auto-mounts; React bundled in)
   index.ts              ESM entry (NPM)
-  component.tsx         React wrapper
-  widget.ts             framework-agnostic core (Shadow DOM, render, fetch)
+  component.tsx         React wrapper around mount()
+  widget.tsx            React widget core (Shadow DOM root, render, fetch)
   theme.ts              auto/light/dark resolution + system-theme listener
   i18n.ts               UI strings (zh)
   share.ts              copy / X / LINE share builders
