@@ -11,42 +11,44 @@ const PUBLIC_DIR = join(ROOT, 'public');
 if (!existsSync(DIST_DIR)) mkdirSync(DIST_DIR, { recursive: true });
 if (!existsSync(PUBLIC_DIR)) mkdirSync(PUBLIC_DIR, { recursive: true });
 
-const shared = {
+const sharedBase = {
   bundle: true,
   platform: 'browser' as const,
   target: 'es2020',
   sourcemap: true,
-  minify: true,
-  external: ['react', 'react-dom', 'react/jsx-runtime'],
   jsx: 'automatic' as const,
 };
 
 async function main() {
-  // UMD/IIFE — CDN bundle, auto-mount
+  // UMD/IIFE — CDN bundle, self-contained (React bundled in for script-tag users)
   await build({
-    ...shared,
+    ...sharedBase,
     entryPoints: [join(ROOT, 'src/embed.ts')],
     outfile: join(DIST_DIR, 'embed.js'),
     format: 'iife',
     globalName: 'DailySoup',
+    minify: true,
+    define: { 'process.env.NODE_ENV': '"production"' },
   });
 
-  // ESM — NPM
+  // ESM — NPM (React stays as peer)
   await build({
-    ...shared,
+    ...sharedBase,
     entryPoints: [join(ROOT, 'src/index.ts')],
     outfile: join(DIST_DIR, 'embed.esm.js'),
     format: 'esm',
     minify: false,
+    external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
   });
 
-  // CJS — NPM
+  // CJS — NPM (React stays as peer)
   await build({
-    ...shared,
+    ...sharedBase,
     entryPoints: [join(ROOT, 'src/index.ts')],
     outfile: join(DIST_DIR, 'embed.cjs.js'),
     format: 'cjs',
     minify: false,
+    external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
   });
 
   // Copy CDN artefacts to public/ so Next.js serves them at /
@@ -58,7 +60,7 @@ async function main() {
     if (existsSync(src)) copyFileSync(src, join(PUBLIC_DIR, `schedule-${lang}.json`));
   }
 
-  console.log('Built embed.js (IIFE), embed.esm.js (ESM), embed.cjs.js (CJS)');
+  console.log('Built embed.js (IIFE, React bundled), embed.esm.js (ESM, React peer), embed.cjs.js (CJS, React peer)');
   console.log('Copied bundles + schedules into public/');
 }
 

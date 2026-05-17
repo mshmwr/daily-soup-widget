@@ -1,3 +1,8 @@
+// src/widget.tsx
+import { useCallback, useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
+
 // src/i18n.ts
 var STRINGS = {
   zh: {
@@ -166,81 +171,9 @@ function todayUtc8(now = /* @__PURE__ */ new Date()) {
   return `${yy}-${mm}-${dd}`;
 }
 
-// src/widget.ts
+// src/widget.tsx
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 var DEFAULT_SCHEDULE_BASE = "https://daily-soup-widget.vercel.app";
-function escape(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-function attachRoot(host) {
-  if (typeof host.attachShadow === "function") {
-    if (host.shadowRoot) return host.shadowRoot;
-    return host.attachShadow({ mode: "open" });
-  }
-  console.warn("[daily-soup] attachShadow unsupported, falling back to light DOM");
-  return host;
-}
-function injectStyles(root) {
-  const style = document.createElement("style");
-  style.textContent = WIDGET_STYLES;
-  root.appendChild(style);
-}
-function buildSkeleton(theme) {
-  const card = document.createElement("div");
-  card.className = `ds-card ds-${theme} ds-skeleton`;
-  card.innerHTML = `
-    <div class="ds-quote">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-    <div class="ds-meta"><span class="ds-author">&nbsp;</span><span class="ds-source">&nbsp;</span></div>
-  `;
-  return card;
-}
-function renderQuote(card, quote, lang, theme) {
-  const s = t(lang);
-  card.className = `ds-card ds-${theme}`;
-  const sourceLabel = quote.sourceUrl ? `<a href="${escape(quote.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escape(quote.source)}</a>` : escape(quote.source);
-  const flag = quote.attribution === "popular-attribution" ? `<span class="ds-flag">${escape(s.attributedPopular)}</span>` : "";
-  card.innerHTML = `
-    <p class="ds-quote">${escape(quote.text)}</p>
-    <div class="ds-meta">
-      <span class="ds-author">\u2014 ${escape(quote.author)}${flag}</span>
-      ${quote.source ? `<span class="ds-source">${s.source}\uFF1A${sourceLabel}</span>` : ""}
-    </div>
-    <div class="ds-actions">
-      <div class="ds-share">
-        <button class="ds-btn" data-action="copy" type="button" aria-label="${escape(s.copy)}">
-          <span aria-hidden="true">\u29C9</span><span class="ds-share-label">${escape(s.copy)}</span>
-        </button>
-        <a class="ds-btn" data-action="x" href="${escape(buildXShareUrl({ text: quote.text, author: quote.author }))}" target="_blank" rel="noopener noreferrer" aria-label="${escape(s.shareX)}">
-          <span aria-hidden="true">\u{1D54F}</span><span class="ds-share-label">X</span>
-        </a>
-        <a class="ds-btn" data-action="line" href="${escape(buildLineShareUrl({ text: quote.text, author: quote.author }))}" target="_blank" rel="noopener noreferrer" aria-label="${escape(s.shareLine)}">
-          <span aria-hidden="true">L</span><span class="ds-share-label">LINE</span>
-        </a>
-      </div>
-      <span class="ds-powered"><a href="https://personal-site-mocha-chi.vercel.app" target="_blank" rel="noopener noreferrer">${s.poweredBy}</a></span>
-    </div>
-  `;
-  const copyBtn = card.querySelector('[data-action="copy"]');
-  if (copyBtn) {
-    copyBtn.addEventListener("click", async () => {
-      const ok = await copyToClipboard({ text: quote.text, author: quote.author });
-      if (ok) {
-        const label = copyBtn.querySelector(".ds-share-label");
-        const originalLabel = label?.textContent ?? "";
-        if (label) label.textContent = s.copied;
-        copyBtn.classList.add("ds-toast");
-        setTimeout(() => {
-          if (label) label.textContent = originalLabel;
-          copyBtn.classList.remove("ds-toast");
-        }, 2e3);
-      }
-    });
-  }
-}
-function renderError(card, lang, theme) {
-  card.className = `ds-card ds-${theme}`;
-  const s = t(lang);
-  card.innerHTML = `<p class="ds-error">${escape(s.loadFailed)}</p>`;
-}
 async function fetchSchedule(scheduleUrl, lang) {
   const base = scheduleUrl.replace(/\/$/, "");
   const url = `${base}/schedule-${lang}.json`;
@@ -253,8 +186,7 @@ async function fetchSchedule(scheduleUrl, lang) {
     return null;
   }
 }
-function pickQuote(schedule) {
-  const today = todayUtc8();
+function pickQuote(schedule, today) {
   const id = schedule.entries[today];
   if (id && schedule.quotes[id]) return schedule.quotes[id];
   const fallbackId = Object.keys(schedule.quotes).sort()[0];
@@ -264,101 +196,231 @@ function pickQuote(schedule) {
   }
   return null;
 }
-function applyThemeOverrides(card, config, maxWidth) {
-  const colors = getThemeColors(config);
+function buildInlineStyle(themeConfig, maxWidth) {
+  const style = {};
+  const colors = getThemeColors(themeConfig);
   if (colors) {
-    if (colors.bg) card.style.setProperty("--ds-bg", colors.bg);
-    if (colors.ink) card.style.setProperty("--ds-fg", colors.ink);
-    if (colors.muted) card.style.setProperty("--ds-muted", colors.muted);
-    if (colors.border) card.style.setProperty("--ds-border", colors.border);
-    if (colors.accent) card.style.setProperty("--ds-accent", colors.accent);
+    if (colors.bg) style["--ds-bg"] = colors.bg;
+    if (colors.ink) style["--ds-fg"] = colors.ink;
+    if (colors.muted) style["--ds-muted"] = colors.muted;
+    if (colors.border) style["--ds-border"] = colors.border;
+    if (colors.accent) style["--ds-accent"] = colors.accent;
   }
-  if (maxWidth) card.style.setProperty("--ds-max-width", maxWidth);
+  if (maxWidth) style["--ds-max-width"] = maxWidth;
+  return style;
+}
+function DailySoupWidget({ lang, themeConfig, scheduleUrl, maxWidth }) {
+  const [resolvedTheme, setResolvedTheme] = useState(() => resolveTheme(themeConfig));
+  const [schedule, setSchedule] = useState(null);
+  const [displayedDate, setDisplayedDate] = useState("");
+  const [quote, setQuote] = useState(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [copyToast, setCopyToast] = useState(false);
+  useEffect(() => {
+    if (themeConfig !== "auto") {
+      setResolvedTheme(resolveTheme(themeConfig));
+      return;
+    }
+    setResolvedTheme(resolveTheme(themeConfig));
+    return watchSystemTheme(setResolvedTheme);
+  }, [themeConfig]);
+  useEffect(() => {
+    let cancelled = false;
+    let retried = false;
+    const load = async () => {
+      const sch = await fetchSchedule(scheduleUrl, lang);
+      if (cancelled) return;
+      if (!sch) {
+        if (!retried) {
+          retried = true;
+          setTimeout(load, 2e3);
+          return;
+        }
+        setLoadFailed(true);
+        return;
+      }
+      const today = todayUtc8();
+      const q = pickQuote(sch, today);
+      if (!q) {
+        setLoadFailed(true);
+        return;
+      }
+      flushSync(() => {
+        setSchedule(sch);
+        setDisplayedDate(today);
+        setQuote(q);
+      });
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [lang, scheduleUrl]);
+  useEffect(() => {
+    if (!schedule || typeof document === "undefined") return;
+    const onVisibility = () => {
+      if (document.visibilityState !== "visible") return;
+      const today = todayUtc8();
+      if (today === displayedDate) return;
+      const q = pickQuote(schedule, today);
+      if (!q) return;
+      flushSync(() => {
+        setDisplayedDate(today);
+        setQuote(q);
+      });
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [schedule, displayedDate]);
+  const inlineStyle = buildInlineStyle(themeConfig, maxWidth);
+  const s = t(lang);
+  const handleCopy = useCallback(async () => {
+    if (!quote) return;
+    const ok = await copyToClipboard({ text: quote.text, author: quote.author });
+    if (ok) {
+      setCopyToast(true);
+      setTimeout(() => setCopyToast(false), 2e3);
+    }
+  }, [quote]);
+  if (loadFailed) {
+    return /* @__PURE__ */ jsxs(Fragment, { children: [
+      /* @__PURE__ */ jsx("style", { children: WIDGET_STYLES }),
+      /* @__PURE__ */ jsx("div", { className: `ds-card ds-${resolvedTheme}`, style: inlineStyle, children: /* @__PURE__ */ jsx("p", { className: "ds-error", children: s.loadFailed }) })
+    ] });
+  }
+  if (!quote) {
+    return /* @__PURE__ */ jsxs(Fragment, { children: [
+      /* @__PURE__ */ jsx("style", { children: WIDGET_STYLES }),
+      /* @__PURE__ */ jsxs("div", { className: `ds-card ds-${resolvedTheme} ds-skeleton`, style: inlineStyle, children: [
+        /* @__PURE__ */ jsx("div", { className: "ds-quote", children: "\xA0".repeat(25) }),
+        /* @__PURE__ */ jsxs("div", { className: "ds-meta", children: [
+          /* @__PURE__ */ jsx("span", { className: "ds-author", children: "\xA0" }),
+          /* @__PURE__ */ jsx("span", { className: "ds-source", children: "\xA0" })
+        ] })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx("style", { children: WIDGET_STYLES }),
+    /* @__PURE__ */ jsxs("div", { className: `ds-card ds-${resolvedTheme}`, style: inlineStyle, children: [
+      /* @__PURE__ */ jsx("p", { className: "ds-quote", children: quote.text }),
+      /* @__PURE__ */ jsxs("div", { className: "ds-meta", children: [
+        /* @__PURE__ */ jsxs("span", { className: "ds-author", children: [
+          "\u2014 ",
+          quote.author,
+          quote.attribution === "popular-attribution" && /* @__PURE__ */ jsx("span", { className: "ds-flag", children: s.attributedPopular })
+        ] }),
+        quote.source && /* @__PURE__ */ jsxs("span", { className: "ds-source", children: [
+          s.source,
+          "\uFF1A",
+          quote.sourceUrl ? /* @__PURE__ */ jsx("a", { href: quote.sourceUrl, target: "_blank", rel: "noopener noreferrer", children: quote.source }) : quote.source
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "ds-actions", children: [
+        /* @__PURE__ */ jsxs("div", { className: "ds-share", children: [
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              className: `ds-btn${copyToast ? " ds-toast" : ""}`,
+              "data-action": "copy",
+              type: "button",
+              "aria-label": s.copy,
+              onClick: handleCopy,
+              children: [
+                /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "\u29C9" }),
+                /* @__PURE__ */ jsx("span", { className: "ds-share-label", children: copyToast ? s.copied : s.copy })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxs(
+            "a",
+            {
+              className: "ds-btn",
+              "data-action": "x",
+              href: buildXShareUrl({ text: quote.text, author: quote.author }),
+              target: "_blank",
+              rel: "noopener noreferrer",
+              "aria-label": s.shareX,
+              children: [
+                /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "\u{1D54F}" }),
+                /* @__PURE__ */ jsx("span", { className: "ds-share-label", children: "X" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxs(
+            "a",
+            {
+              className: "ds-btn",
+              "data-action": "line",
+              href: buildLineShareUrl({ text: quote.text, author: quote.author }),
+              target: "_blank",
+              rel: "noopener noreferrer",
+              "aria-label": s.shareLine,
+              children: [
+                /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "L" }),
+                /* @__PURE__ */ jsx("span", { className: "ds-share-label", children: "LINE" })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: "ds-powered", children: /* @__PURE__ */ jsx(
+          "a",
+          {
+            href: "https://personal-site-mocha-chi.vercel.app",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            children: s.poweredBy
+          }
+        ) })
+      ] })
+    ] })
+  ] });
+}
+function attachRoot(host) {
+  if (typeof host.attachShadow === "function") {
+    if (host.shadowRoot) return host.shadowRoot;
+    return host.attachShadow({ mode: "open" });
+  }
+  console.warn("[daily-soup] attachShadow unsupported, falling back to light DOM");
+  return host;
 }
 function mount(host, options = {}) {
   const lang = options.lang ?? "zh";
   const themeConfig = options.theme ?? "auto";
   const scheduleUrl = options.scheduleUrl === void 0 ? DEFAULT_SCHEDULE_BASE : options.scheduleUrl;
   const maxWidth = options.maxWidth;
-  let resolvedTheme = resolveTheme(themeConfig);
   const root = attachRoot(host);
   if (root === host) {
     host.textContent = "";
   } else {
-    while (root.firstChild) root.removeChild(root.firstChild);
+    const shadow = root;
+    while (shadow.firstChild) shadow.removeChild(shadow.firstChild);
   }
-  injectStyles(root);
-  const card = buildSkeleton(resolvedTheme);
-  applyThemeOverrides(card, themeConfig, maxWidth);
-  root.appendChild(card);
-  const state = {
-    lang,
-    themeConfig,
-    scheduleUrl,
-    host,
-    root,
-    cardEl: card,
-    unwatchTheme: () => {
-    },
-    unwatchVisibility: () => {
-    },
-    schedule: null,
-    displayedDate: ""
-  };
-  if (themeConfig === "auto") {
-    state.unwatchTheme = watchSystemTheme((t2) => {
-      resolvedTheme = t2;
-      state.cardEl.classList.remove("ds-light", "ds-dark");
-      state.cardEl.classList.add(`ds-${t2}`);
-    });
-  }
-  let cancelled = false;
-  let retried = false;
-  const load = async () => {
-    const schedule = await fetchSchedule(scheduleUrl, lang);
-    if (cancelled) return;
-    if (!schedule) {
-      if (!retried) {
-        retried = true;
-        setTimeout(load, 2e3);
-        return;
-      }
-      renderError(state.cardEl, lang, resolvedTheme);
-      return;
-    }
-    state.schedule = schedule;
-    const quote = pickQuote(schedule);
-    if (!quote) {
-      renderError(state.cardEl, lang, resolvedTheme);
-      return;
-    }
-    state.displayedDate = todayUtc8();
-    renderQuote(state.cardEl, quote, lang, resolvedTheme);
-  };
-  load();
-  if (typeof document !== "undefined") {
-    const onVisibility = () => {
-      if (document.visibilityState !== "visible") return;
-      if (!state.schedule) return;
-      const today = todayUtc8();
-      if (today === state.displayedDate) return;
-      const quote = pickQuote(state.schedule);
-      if (!quote) return;
-      state.displayedDate = today;
-      renderQuote(state.cardEl, quote, lang, resolvedTheme);
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-    state.unwatchVisibility = () => document.removeEventListener("visibilitychange", onVisibility);
-  }
+  const container = document.createElement("div");
+  root.appendChild(container);
+  const reactRoot = createRoot(container);
+  flushSync(() => {
+    reactRoot.render(
+      /* @__PURE__ */ jsx(
+        DailySoupWidget,
+        {
+          lang,
+          themeConfig,
+          scheduleUrl,
+          maxWidth
+        }
+      )
+    );
+  });
   return {
     destroy() {
-      cancelled = true;
-      state.unwatchTheme();
-      state.unwatchVisibility();
+      reactRoot.unmount();
       if (root === host) {
         host.textContent = "";
       } else if (host.shadowRoot) {
-        while (host.shadowRoot.firstChild) host.shadowRoot.removeChild(host.shadowRoot.firstChild);
+        while (host.shadowRoot.firstChild) {
+          host.shadowRoot.removeChild(host.shadowRoot.firstChild);
+        }
       }
     }
   };
@@ -378,17 +440,17 @@ function mountAll(selector = "[data-daily-soup], #daily-soup") {
 }
 
 // src/component.tsx
-import { useEffect, useRef } from "react";
-import { jsx } from "react/jsx-runtime";
+import { useEffect as useEffect2, useRef } from "react";
+import { jsx as jsx2 } from "react/jsx-runtime";
 function DailySoup({ lang = "zh", theme = "auto", scheduleUrl, className, maxWidth }) {
   const hostRef = useRef(null);
   const themeKey = typeof theme === "string" ? theme : JSON.stringify(theme);
-  useEffect(() => {
+  useEffect2(() => {
     if (!hostRef.current) return;
     const handle = mount(hostRef.current, { lang, theme, scheduleUrl, maxWidth });
     return () => handle.destroy();
   }, [lang, themeKey, scheduleUrl, maxWidth]);
-  return /* @__PURE__ */ jsx("div", { ref: hostRef, className, "data-daily-soup-host": "" });
+  return /* @__PURE__ */ jsx2("div", { ref: hostRef, className, "data-daily-soup-host": "" });
 }
 export {
   DailySoup,

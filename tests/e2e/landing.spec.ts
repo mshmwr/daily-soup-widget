@@ -10,19 +10,18 @@ test('landing page renders hero + install snippets', async ({ page }) => {
 test('widget mounts and renders a quote inside its shadow root', async ({ page }) => {
   await page.goto('/');
 
-  // The first demo host
   const host = page.locator('[data-daily-soup-host]').first();
   await expect(host).toBeVisible();
 
-  // Wait for content to fetch + render. Shadow DOM piercing via locator is automatic in Playwright.
+  // Shadow DOM piercing via locator is automatic in Playwright. not.toBeEmpty auto-waits
+  // until the skeleton swaps to the real quote text.
   const quote = host.locator('.ds-quote');
   await expect(quote).toBeVisible({ timeout: 5000 });
-  const text = await quote.textContent();
-  expect(text?.trim().length ?? 0).toBeGreaterThan(0);
+  await expect(quote).not.toBeEmpty({ timeout: 5000 });
 });
 
 test('powered-by link is present in every mounted widget', async ({ page }) => {
   await page.goto('/');
-  const poweredCount = await page.locator('.ds-powered a:has-text("mshmwr")').count();
-  expect(poweredCount).toBeGreaterThanOrEqual(3);
+  const powered = page.locator('.ds-powered a:has-text("mshmwr")');
+  await expect(powered).toHaveCount(3, { timeout: 5000 });
 });
